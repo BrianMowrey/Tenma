@@ -176,10 +176,15 @@ def __extract_year(s):
       results = re.findall(r"\([^[\](){}]*?\)",s)
       results += re.findall(r"\[[^[\](){}]*?\]",s)
       results += re.findall(r"\{[^[\](){}]*?\}",s)
+      
       # 2. strip off the outer brackets and spaces
       results = [x.strip(r"()[]{}").strip() for x in results]
-      # 3. if there is a year range, strip of the second half "2006-2009" -> "2006"
+      # 3 if there is a specific date, just take year (needs to be before range extractor below)
+      results = [re.sub(r"(\d{4})-\d{2}-\d{2}", r"\1", x) for x in results]
+
+      # 3.1 if there is a year range, strip of the second half "2006-2009" -> "2006"
       results = [re.sub(r"(\d{4})\s*-\s*\d{1,4}",r"\1",x) for x in results]
+      
       # 4. only keep strings that are valid 4 digit years
       results = [x for x in results if __isYear(x)]
       retval = results[-1] if results else ""
