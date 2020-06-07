@@ -4,6 +4,7 @@ from urllib.parse import quote_plus, unquote_plus
 from comics.models import Arc, Character, Creator, Team, Publisher, Series, Issue, Roles, Settings
 from .comicfilehandler import ComicFileHandler
 from . import fnameparser, utils
+from django.conf import settings
 
 from fuzzywuzzy import fuzz
 
@@ -20,7 +21,7 @@ class ComicImporter(object):
 
 		# Set basic reusable strings
 		self.api_key = Settings.get_solo().api_key
-		self.directory_path = 'files'
+		self.directory_path = settings.FILES_ROOT
 
 		# API Strings
 		self.baseurl = 'https://comicvine.gamespot.com/api/'
@@ -131,20 +132,25 @@ class ComicImporter(object):
 		# Initialize response
 		found_issue = None
 		cvid = ''
-
+		self.logger.debug(f"filename={filename}")
 		# Attempt to extract series name, issue number, and year
 		extracted = fnameparser.extract(filename)
+		self.logger.debug(f"extracted={extracted}")
 		series_name = utils.remove_special_characters(extracted[0])
+		self.logger.debug(f"series_name={series_name}")
 		series_name_url = quote_plus(series_name)
 		issue_number = extracted[1] if extracted[1] else '1'
+		self.logger.debug(f"issue_number={issue_number}")
 		issue_year = extracted[2]
 
 		# First check if there's already a series locally
 		matching_series = Series.objects.filter(name=series_name)
+		self.logger.debug(f"matching (local) series: {matching_series}")
 
 		if matching_series:
 			if not matching_series[0].cvid == '':
 				found_issue = self._find_match_with_series(matching_series[0].cvid, issue_number)
+				self.logger.debug(f"found issue with local matching series: {found_issue}")
 
 		if found_issue is None:
 			# Query Parameters

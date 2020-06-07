@@ -175,6 +175,9 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+# the file path is stored in the db for each issue
+# so if you change this after importing comics 
+# you'll have to update in the db or prepare for duplicates
 FILES_ROOT = os.path.join(BASE_DIR, 'files/')
 
 LOGIN_URL = '/admin/login/'
