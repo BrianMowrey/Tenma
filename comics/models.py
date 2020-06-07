@@ -142,7 +142,7 @@ class Issue(models.Model):
 	arcs = models.ManyToManyField(Arc, blank=True)
 	characters = models.ManyToManyField(Character, blank=True)
 	teams = models.ManyToManyField(Team, blank=True)
-	file = models.FilePathField('File path', path="files/", recursive=True)
+	file = models.FilePathField('File path', path=settings.FILES_ROOT, recursive=True)
 	cover = models.FilePathField('Cover file path', path="media/images", blank=True)
 	status = models.PositiveSmallIntegerField('Status', choices=STATUS_CHOICES, default=0, blank=True)
 	leaf = models.PositiveSmallIntegerField(editable=False, default=1, blank=True)
