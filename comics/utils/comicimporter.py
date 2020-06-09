@@ -137,14 +137,16 @@ class ComicImporter(object):
 		extracted = fnameparser.extract(filename)
 		self.logger.debug(f"extracted={extracted}")
 		series_name = utils.remove_special_characters(extracted[0])
-		self.logger.debug(f"series_name={series_name}")
+		self.logger.debug(f"series_name=[{series_name}]")
 		series_name_url = quote_plus(series_name)
 		issue_number = extracted[1] if extracted[1] else '1'
 		self.logger.debug(f"issue_number={issue_number}")
 		issue_year = extracted[2]
 
 		# First check if there's already a series locally
-		matching_series = Series.objects.filter(name=series_name)
+		matching_series = Series.objects.filter(name__iexact=series_name)
+		if issue_year:
+			matching_series = matching_series.filter(year=issue_year)
 		self.logger.debug(f"matching (local) series: {matching_series}")
 
 		if matching_series:
